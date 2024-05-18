@@ -5,13 +5,22 @@
         ":dependencyDashboard",
         ":semanticCommits",
         "github>6ixfalls/homelab-gitops//.github/renovate/commitMessage.json",
-        "github>6ixfalls/homelab-gitops//.github/renovate/autoMerge.json"
+        "github>6ixfalls/homelab-gitops//.github/renovate/autoMerge.json",
+        "github>6ixfalls/homelab-gitops//.github/renovate/kairos.json"
     ],
     "platform": "github",
     "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-    "helm-values": {
-        "fileMatch": ["deploy-values.yaml"]
-    },
     "prHourlyLimit": 5,
-    "includePaths": ["resources/**", ".github/**"]
+    "flux": {
+        "fileMatch": ["(^|/)clusters/.+\\.ya?ml$"]
+    },
+    "helm-values": {
+        "fileMatch": ["(^|/)clusters/.+\\.ya?ml$"]
+    },
+    "kubernetes": {
+        "fileMatch": [
+            "(^|/)\\bootstrap/.+\\.ya?ml(?:\\.j2)?$",
+            "(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$"
+        ]
+    }
 }
