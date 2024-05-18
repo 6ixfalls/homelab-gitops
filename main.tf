@@ -2,7 +2,7 @@ terraform {
     required_providers {
         proxmox = {
             source = "bpg/proxmox"
-            version = "0.42.0"
+            version = "0.51.1"
         }
         opnsense = {
             source = "xyhhx/opnsense"
@@ -280,15 +280,15 @@ resource "proxmox_virtual_environment_container" "auroraboot" {
     }
 
     provisioner "file" {
-        source = "./aurora_init.sh"
-        destination = "."
+        source = "aurora_init.sh"
+        destination = "aurora_init.sh"
     }
 
     provisioner "remote-exec" {
         inline = [
-            "chmod +x aurora_init.sh",
-            "DOPPLER_TOKEN=${var.doppler_token} DOPPLER_PROJECT=${var.doppler_project} CLUSTER_DOMAIN=${var.cluster_domain} ./aurora_init.sh",
-            "rm aurora_init.sh"
+            "chmod +x ~/aurora_init.sh",
+            "DOPPLER_TOKEN=${var.doppler_token} DOPPLER_PROJECT=${var.doppler_project} CLUSTER_DOMAIN=${var.cluster_domain} ~/aurora_init.sh",
+            "rm ~/aurora_init.sh"
         ]
     }
 
