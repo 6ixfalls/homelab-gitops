@@ -66,7 +66,7 @@ stages:
             {{- end }}
             {{- if $first }}
             stages:
-              'kairos-agent.bootstrap':
+              boot:
                 - name: "Drop external secret"
                   if: "[ ! -e /var/lib/rancher/k3s/server/manifests/cluster-secrets.yaml ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
                   files:
