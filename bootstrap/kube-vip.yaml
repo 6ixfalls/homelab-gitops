@@ -1,0 +1,19 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: kube-vip
+  namespace: kube-system
+spec:
+  repo: https://kube-vip.github.io/helm-charts
+  chart: kube-vip
+  version: 0.4.4
+  targetNamespace: kube-system
+  bootstrap: true
+  valuesContent: |-
+    config:
+      address: "10.17.4.111"
+    env:
+      vip_interface: "ens18"
+      cp_enable: "true"
+      svc_enable: "false"
+      vip_leaderelection: "true"

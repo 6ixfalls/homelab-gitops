@@ -1,0 +1,8 @@
+listen_addr: :8081
+state_dir: "/storage"
+#release_version: v2.4.2
+#artifact_version: v2.4.2-k3sv1.26.9+k3s1
+#flavor: standard
+#variant: debian-bookworm
+#repository: kairos-io/kairos
+container_image: quay.io/kairos/debian:bookworm-standard-amd64-generic-v2.5.0-k3sv1.27.9-k3s1

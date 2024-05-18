@@ -1,0 +1,11 @@
+virtual_environment_username = ""
+virtual_environment_password = ""
+virtual_environment_endpoint = ""
+
+opnsense_endpoint = ""
+opnsense_username = ""
+opnsense_password = ""
+
+doppler_token = ""
+doppler_project = ""
+cluster_domain = ""

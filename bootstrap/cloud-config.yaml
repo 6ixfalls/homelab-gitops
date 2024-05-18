@@ -1,0 +1,247 @@
+#cloud-config
+
+# debug: true
+users:
+  - name: six
+    shell: /bin/bash
+    groups: [admin, sudo]
+    ssh_authorized_keys: [github:6ixfalls]
+
+ssh_pwauth: false
+
+install:
+  auto: true
+  device: /dev/sda
+  no-format: true
+  reboot: true
+
+growpart:
+  devices: ["/"]
+
+stages:
+  after-install-chroot:
+    # -- (only `commands`,`entities` and `files` may have templating)
+    - name: "Add control plane or worker config determined by mac address"
+      files:
+        - path: /oem/60_k3s_config.yaml
+          permissions: 0666
+          content: |
+            #cloud-config
+            {{- $control := false -}}
+            {{- $first := false -}}
+            {{- $macs := list "bc:24:11:ca:7b:77" "bc:24:11:fa:f2:eb" "bc:24:11:97:43:81" -}}
+            {{- range $net := .Values.network -}}
+              {{- if has $net.macaddress $macs -}}
+                {{- $control = true -}}
+              {{- end -}}
+              {{- if eq $net.macaddress (first $macs) -}}
+                {{- $first = true -}}
+              {{ end -}}
+            {{- end -}}
+            {{- if $control }}
+            k3s:
+              enabled: true
+              env:
+                K3S_TOKEN: "{{ P2P_NETWORK_TOKEN }}"
+              args:
+            {{- if $first }}
+                - --cluster-init
+            {{- else }}
+                - --server https://10.17.4.111:6443
+            {{- end }}
+                - --tls-san "10.17.4.111"
+                - --disable traefik,servicelb
+                - --flannel-backend none
+                - --disable-network-policy
+                - --write-kubeconfig-mode 0644
+                - --node-taint node-role.kubernetes.io/control-plane:NoSchedule
+                - --disable-kube-proxy
+            {{- else }}
+            k3s-agent:
+              enabled: true
+              env:
+                K3S_TOKEN: "{{ P2P_NETWORK_TOKEN }}"
+              args:
+                - --server https://10.17.4.111:6443
+            {{- end }}
+
+  boot:
+    - name: "Set up various kube environment variables"
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+        CONTAINERD_ADDRESS: /run/k3s/containerd/containerd.sock
+        CONTAINERD_NAMESPACE: k8s.io
+    - name: "Drop initialization lock script"
+      files:
+        - path: /tmp/get-manifest-lock.sh
+          content: |
+            #!/bin/bash
+            # Try for 30 minutes, with 15 second intervals
+            minutes=30
+            sleep=15
+            retry_attempt=1
+            total_attempts=$(( minutes * 60 / sleep ))
+            active="false"
+
+            while [[ $retry_attempt -le $total_attempts ]]; do
+              if [[ "$active" != "true" ]]; then
+                # Ensure only one host tries to bootstrap, whichever makes the configmap first
+                if ! timeout 5 kubectl version &> /dev/null; then
+                  echo "Kubernetes API not ready yet, sleeping"
+                else
+                  if ! timeout 5 kubectl create configmap $1 --from-literal=hostname="$(hostname)"; then
+                    echo "Unable to create configmap, another node may be active"
+                  fi
+
+                  # The configmap exists but we must finally check if the hostname matches
+                  if [[ "$(timeout 5 kubectl get configmap -n default $1 -o jsonpath='{.data.hostname}')" != "$(hostname)" ]]; then
+                    echo "Bootstrap ConfigMap exists but another node is active, exiting..."
+                    exit 3
+                  fi
+
+                  # We must be the active node
+                  active="true"
+                fi
+              fi
+                
+              if [[ "$active" == "true" ]]; then
+                exit 0
+              fi
+
+              echo "Install attempt $retry_attempt (of $total_attempts) failed, retrying in $sleep seconds"
+              (( retry_attempt = retry_attempt + 1 ))
+              sleep $sleep
+            done
+
+            # Failed all attempts
+            exit 2
+          permissions: 0777
+  "provider-kairos.bootstrap.after.master":
+    - name: "Drop external secret"
+      if: "[ ! -e /var/lib/rancher/k3s/server/manifests/cluster-secrets.yaml ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
+      files:
+        - path: /var/lib/rancher/k3s/server/manifests/cluster-secrets.yaml
+          content: |
+            apiVersion: v1
+            data:
+              environment: cHJk
+              dopplerToken: {{ DOPPLER_TOKEN }}
+              dopplerProject: {{ DOPPLER_PROJECT }}
+              clusterDomain: {{ CLUSTER_DOMAIN }}
+            kind: Secret
+            metadata:
+              name: cluster-secrets
+              namespace: flux-system
+    - name: "Add cluster-specific manifests: Flux"
+      if: "[ ! -e /var/lib/rancher/k3s/server/manifests/flux.applied ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
+      files:
+        - path: /tmp/flux-manifest.sh
+          content: |
+            #!/bin/bash
+            set -x
+            kubectl apply --server-side --kustomize github.com/6ixfalls/homelab-gitops.git//bootstrap
+            kubectl apply --server-side --kustomize github.com/6ixfalls/homelab-gitops.git//clusters/hutao/flux/config
+            touch /var/lib/rancher/k3s/server/manifests/flux.applied
+          permissions: 0777
+      commands:
+        - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/flux-manifest.sh > /tmp/flux-apply.out 2>&1 &"
+    - name: "Add cluster-specific manifests: Cilium"
+      if: "[ ! -e /var/lib/rancher/k3s/server/manifests/cilium-helmchart.applied ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
+      downloads:
+        - url: https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cilium.yaml
+          path: /var/lib/rancher/k3s/server/manifests/cilium-helmchart.yaml
+      files:
+        - path: /tmp/cilium-manifest.sh
+          content: |
+            #!/bin/bash
+            NAMESPACE="kube-system"
+            HELM_CHART_NAME="cilium"
+            KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+
+            if ! /tmp/get-manifest-lock.sh $HELM_CHART_NAME; then
+              echo "Lock was not obtained"
+              exit 0
+            fi
+
+            helm_release_exists() {
+              kubectl get helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} &> /dev/null
+            }
+
+            while ! helm_release_exists; do
+              echo "Helm release not found. Retrying in 5 seconds..."
+              sleep 5
+            done
+
+            # Wait for HelmChart to rollout
+            if kubectl wait --for=condition=complete job/helm-install-${HELM_CHART_NAME} -n ${NAMESPACE} --timeout=20m; then
+              # Patch the HelmChart to unmanage it
+              kubectl patch helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} \
+                  --type=json -p='[{"op": "add", "path": "/metadata/annotations/helmcharts.helm.cattle.io~1unmanaged", "value": "true"}]'
+
+              # Delete the HelmChart CR
+              kubectl delete helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} &
+
+              # Force delete the HelmChart
+              kubectl patch helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} \
+                  --type=json -p='[{"op": "replace", "path": "/metadata/finalizers", "value": []}]'
+
+              # Delete the manifests
+              rm -f /var/lib/rancher/k3s/server/manifests/cilium-helmchart.yaml
+              touch /var/lib/rancher/k3s/server/manifests/cilium-helmchart.applied
+            else
+              echo "${HELM_CHART_NAME} HelmChart rollout did not complete successfully within 20 minutes."
+              exit 1
+            fi
+          permissions: 0777
+      commands:
+        - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/cilium-manifest.sh > /tmp/cilium-apply.out 2>&1 &"
+    - name: "Add cluster-specific manifests: kube-vip"
+      if: "[ ! -e /var/lib/rancher/k3s/server/manifests/kube-vip-helmchart.applied ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
+      downloads:
+        - url: https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/kube-vip.yaml
+          path: /var/lib/rancher/k3s/server/manifests/kube-vip-helmchart.yaml
+      files:
+        - path: /tmp/kube-vip-manifest.sh
+          content: |
+            #!/bin/bash
+            NAMESPACE="kube-system"
+            HELM_CHART_NAME="kube-vip"
+            KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+
+            if ! /tmp/get-manifest-lock.sh $HELM_CHART_NAME; then
+              echo "Lock was not obtained"
+              exit 0
+            fi
+
+            helm_release_exists() {
+              kubectl get helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} &> /dev/null
+            }
+
+            while ! helm_release_exists; do
+              echo "Helm release not found. Retrying in 5 seconds..."
+              sleep 5
+            done
+
+            # Wait for HelmChart to rollout
+            if kubectl wait --for=condition=complete job/helm-install-${HELM_CHART_NAME} -n ${NAMESPACE} --timeout=20m; then
+              # Patch the HelmChart to unmanage it
+              kubectl patch helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} \
+                  --type=json -p='[{"op": "add", "path": "/metadata/annotations/helmcharts.helm.cattle.io~1unmanaged", "value": "true"}]'
+
+              # Delete the HelmChart CR
+              kubectl delete helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} &
+
+              # Force delete the HelmChart
+              kubectl patch helmchart ${HELM_CHART_NAME} -n ${NAMESPACE} \
+                  --type=json -p='[{"op": "replace", "path": "/metadata/finalizers", "value": []}]'
+
+              # Delete the manifests
+              rm -f /var/lib/rancher/k3s/server/manifests/kube-vip-helmchart.yaml
+              touch /var/lib/rancher/k3s/server/manifests/kube-vip-helmchart.applied
+            else
+              echo "${HELM_CHART_NAME} HelmChart rollout did not complete successfully within 20 minutes."
+              exit 1
+            fi
+          permissions: 0777
+      commands:
+        - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/kube-vip-manifest.sh > /tmp/kube-vip-apply.out 2>&1 &"
