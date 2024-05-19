@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: cilium
-      version: 1.15.0
+      version: 1.15.5
       sourceRef:
         kind: HelmRepository
         name: cilium
@@ -35,8 +35,7 @@ spec:
         clusterPoolIPv4PodCIDRList: ["10.24.0.0/16"]
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: 10.24.0.0/16
-    tunnelProtocol: ""
-    routingMode: "native"
+    routingMode: native
     bpf:
       masquerade: true
     kubeProxyReplacement: true
@@ -47,3 +46,6 @@ spec:
     rollOutCiliumPods: true
     l2announcements:
       enabled: true
+    loadBalancer:
+      algorithm: maglev
+      mode: dsr
