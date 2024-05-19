@@ -1,0 +1,16 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: doppler
+spec:
+  provider:
+    doppler:
+      auth:
+        secretRef:
+          dopplerToken:
+            name: cluster-secrets
+            key: dopplerToken
+            namespace: flux-system
+      project: ${dopplerProject}
+      config: ${environment}
