@@ -14,6 +14,12 @@ install:
   device: /dev/sda
   no-format: true
   reboot: true
+  extra-dirs-rootfs: &longhorn [/var/lib/longhorn]
+
+upgrade:
+  extra-dirs-rootfs: *longhorn
+reset:
+  extra-dirs-rootfs: *longhorn
 
 growpart:
   devices: ["/"]
@@ -50,7 +56,7 @@ stages:
                 - --server https://10.17.4.111:6443
             {{- end }}
                 - --tls-san "10.17.4.111"
-                - --disable traefik,servicelb
+                - --disable traefik,servicelb,local-storage
                 - --flannel-backend none
                 - --disable-network-policy
                 - --write-kubeconfig-mode 0644
