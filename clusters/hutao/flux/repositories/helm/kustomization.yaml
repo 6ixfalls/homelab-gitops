@@ -10,3 +10,5 @@ resources:
   - ./traefik.yaml
   - ./rancher.yaml
   - ./cloudnative-pg.yaml
+  - ./longhorn.yaml
+  
