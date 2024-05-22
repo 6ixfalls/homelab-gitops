@@ -5,7 +5,7 @@ metadata:
   name: &app longhorn-substitution
   namespace: flux-system
 spec:
-  targetNamespace: longhorn-system
+  targetNamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
