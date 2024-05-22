@@ -9,3 +9,4 @@ resources:
   - ./oauth2-proxy.yaml
   - ./traefik.yaml
   - ./rancher.yaml
+  - ./cloudnative-pg.yaml
