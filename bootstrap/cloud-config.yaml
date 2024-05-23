@@ -30,7 +30,6 @@ stages:
       if: "[ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && [ ! -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ]"
       commands:
         - parted /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn --script -a optimal -- mklabel gpt mkpart longhorn ext4 0% 100%
-        - mkfs.ext4 -F /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1
     # -- (only `commands`,`entities` and `files` may have templating)
     - name: "Add control plane or worker config determined by mac address"
       files:
@@ -215,6 +214,10 @@ stages:
         fs.inotify.max_user_instances: "8192"
         fs.inotify.max_user_watches: "524288"
   boot:
+    - name: "Format longhorn filesystem if unformatted"
+      if: '[ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] && [[ ! $(fdisk -lo type /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn | tail -n 1) =~ "Linux" ]]'
+      commands:
+        - mkfs.ext4 -F /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1
     - name: "Mount longhorn filesystem"
       if: "[ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ]"
       commands:
