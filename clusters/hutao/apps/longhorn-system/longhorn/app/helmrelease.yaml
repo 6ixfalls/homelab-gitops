@@ -65,5 +65,5 @@ spec:
       backupCompressionMethod: lz4
       backupConcurrentLimit: 2
       restoreConcurrentLimit: 2
-      offlineReplicaRebuilding: true
+      offlineReplicaRebuilding: enabled
       allowCollectingLonghornUsageMetrics: false
