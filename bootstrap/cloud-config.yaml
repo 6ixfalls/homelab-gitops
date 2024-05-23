@@ -69,6 +69,7 @@ stages:
                 K3S_TOKEN: "{{ P2P_NETWORK_TOKEN }}"
               args:
                 - --server https://10.17.4.111:6443
+                - --node-label "node.longhorn.io/create-default-disk=true"
             {{- end }}
             {{- if $first }}
             stages:
@@ -202,7 +203,37 @@ stages:
                   commands:
                     - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/kube-vip-manifest.sh > /tmp/kube-vip-apply.out 2>&1 &"
             {{- end }}
+  # -- https://github.com/derailed/k9s/issues/1399
+  initramfs:
+    - name: Increase number of open files
+      sysctl:
+        fs.inotify.max_user_instances: "8192"
+        fs.inotify.max_user_watches: "524288"
+
   boot:
+    - name: "Format /dev/sdX with serial 'longhorn' if unformatted and Kairos is installed to /dev/sdX"
+      # -- Double brackets needed for regex compare
+      if: >-
+        [[ $(lsblk -o NAME,LABEL | grep OEM) =~ "-sd" ]] &&
+        [[ ! $(fdisk -lo type /dev/disk/by-id/*_longhorn | tail -n 1) =~ "Linux" ]]
+      commands:
+        - parted /dev/disk/by-id/*_longhorn --script -a optimal -- mklabel gpt mkpart longhorn ext4 0% 100%
+        - &partition mkfs.ext4 -F /dev/disk/by-id/*_longhorn-part1
+    - name: "Partition /dev/disk/by-id/*_longhorn-part1 if unpartitioned and Kairos is installed to /dev/sdX"
+      if: >-
+        [[ $(lsblk -o NAME,LABEL | grep OEM) =~ "-sd" ]] &&
+        [[ $(lsblk -no FSTYPE /dev/disk/by-id/*_longhorn-part1) != "ext4" ]]
+      commands:
+        - *partition
+    - name: "Mount /dev/disk/by-id/*_longhorn-part1 under /var/lib/longhorn if it exists and Kairos is installed to /dev/sdX"
+      if: >-
+        [[ $(lsblk -o NAME,LABEL | grep OEM) =~ "-sd" ]] &&
+        [[ $(lsblk -no FSTYPE /dev/disk/by-id/*_longhorn-part1) == "ext4" ]]
+      commands:
+        # -- https://github.com/kairos-io/packages/blob/3482fed51f21a2155b60a0aa9ac91b1d839d1029/packages/static/kairos-overlay-files/files/system/oem/00_rootfs_uki.yaml#L43
+        - umount /var/lib/longhorn
+        - mount -o rw /dev/disk/by-id/*_longhorn-part1 /var/lib/longhorn
+
     - name: "Set up various kube environment variables"
       environment:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml

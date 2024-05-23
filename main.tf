@@ -126,15 +126,6 @@ resource "proxmox_virtual_environment_vm" "cluster_node" {
         iothread = true
     }
 
-    disk {
-        datastore_id = "local-zfs"
-        file_format = "raw"
-        interface = "scsi1"
-        size = 64
-        iothread = true
-        backup = false
-    }
-
     network_device {
         bridge = "taonet"
         model = "virtio"
@@ -192,6 +183,17 @@ resource "proxmox_virtual_environment_vm" "agent" {
   clone {
     vm_id = proxmox_virtual_environment_vm.cluster_node.vm_id
   }
+
+  disk {
+    datastore_id = "local-zfs"
+    file_format = "raw"
+    interface = "scsi1"
+    size = 64
+    iothread = true
+    backup = false
+  }
+
+  started = false # https://github.com/bpg/terraform-provider-proxmox/issues/1290
 
   network_device {
     bridge      = "taonet"
