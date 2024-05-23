@@ -1,0 +1,49 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  interval: 2m
+  upgrade:
+    # In case a StorageClass needs to be updated
+    force: true
+  chart:
+    spec:
+      chart: longhorn-recurring-jobs
+      version: 5.0.2
+      sourceRef:
+        kind: HelmRepository
+        name: tyzbit
+        namespace: flux-system
+  values:
+    minuteStep: 5
+    hourStep: 2
+    createStorageClasses: true
+    storageclass:
+      allowVolumeExpansion: true
+      reclaimPolicy: Retain
+    parameters:
+      replicaAutoBalance: "ignored"
+      dataLocality: "best-effort"
+      numberOfReplicas: "2"
+      staleReplicaTimeout: "30"
+    groups:
+      "Database":
+        snapshot:
+          - interval: 10m
+            retain: 6
+        backup:
+          - interval: 12h
+            retain: 14
+        filesystem-trim:
+          - interval: 20m
+      "Webapp":
+        snapshot:
+          - interval: 10m
+            retain: 6
+        backup:
+          - interval: 24h
+            retain: 7
+        filesystem-trim:
+          - interval: 20m

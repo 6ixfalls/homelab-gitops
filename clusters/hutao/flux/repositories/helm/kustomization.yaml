@@ -11,4 +11,4 @@ resources:
   - ./rancher.yaml
   - ./cloudnative-pg.yaml
   - ./longhorn.yaml
-  
+  - ./tyzbit.yaml
