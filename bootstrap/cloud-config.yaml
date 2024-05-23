@@ -215,7 +215,7 @@ stages:
         fs.inotify.max_user_watches: "524288"
   boot:
     - name: "Format longhorn filesystem if unformatted"
-      if: '[ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] && [[ ! $(fdisk -lo type /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn | tail -n 1) =~ "Linux" ]]'
+      if: "[ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] && [[ ! $(fsck -n dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1) ]]"
       commands:
         - mkfs.ext4 -F /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1
     - name: "Mount longhorn filesystem"
