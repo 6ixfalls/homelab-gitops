@@ -10,9 +10,8 @@ users:
 ssh_pwauth: false
 
 install:
-  auto: true
   device: /dev/sda
-  no-format: true
+  auto: true
   reboot: true
   extra-dirs-rootfs: &longhorn [/var/lib/longhorn]
 
