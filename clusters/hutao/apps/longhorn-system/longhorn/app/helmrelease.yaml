@@ -26,8 +26,6 @@ spec:
       upgradeVersionCheck: true
 
     defaultSettings:
-      backupTarget: "s3://${S3_BUCKET}@${S3_REGION}/"
-      backupTargetCredentialSecret: longhorn-backup-target
       allowRecurringJobWhileVolumeDetached: false
       createDefaultDiskLabeledNodes: true
       defaultDataLocality: best-effort

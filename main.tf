@@ -2,7 +2,7 @@ terraform {
     required_providers {
         proxmox = {
             source = "bpg/proxmox"
-            version = "0.51.1"
+            version = "0.66.1"
         }
         opnsense = {
             source = "xyhhx/opnsense"
@@ -41,14 +41,24 @@ variable "opnsense_username" {
   description = "The username for the OPNsense API"
 }
 
-variable "doppler_token" {
+variable "infisical_client_id" {
     type        = string
-    description = "The Doppler token for cluster bootstrap secrets"
+    description = "The Infisical client id for cluster bootstrap secrets"
 }
 
-variable "doppler_project" {
+variable "infisical_client_secret" {
     type        = string
-    description = "The Doppler project for cluster bootstrap secrets"
+    description = "The Infisical client secret for cluster bootstrap secrets"
+}
+
+variable "infisical_project_slug" {
+    type        = string
+    description = "The Infisical project slug for cluster bootstrap secrets"
+}
+
+variable "infisical_environment" {
+    type        = string
+    description = "The Infisical environment for cluster bootstrap secrets"
 }
 
 variable "cluster_domain" {
@@ -191,10 +201,9 @@ resource "proxmox_virtual_environment_vm" "agent" {
     size = 64
     iothread = true
     backup = false
+    serial = "longhorn"
   }
-
-  started = false # https://github.com/bpg/terraform-provider-proxmox/issues/1290
-
+  
   network_device {
     bridge      = "taonet"
     model       = "virtio"
@@ -298,7 +307,7 @@ resource "proxmox_virtual_environment_container" "auroraboot" {
     provisioner "remote-exec" {
         inline = [
             "chmod +x ~/aurora_init.sh",
-            "DOPPLER_TOKEN=${var.doppler_token} DOPPLER_PROJECT=${var.doppler_project} CLUSTER_DOMAIN=${var.cluster_domain} ~/aurora_init.sh",
+            "INFISICAL_ENVIRONMENT=${var.infisical_environment} INFISICAL_ID=${var.infisical_client_id} INFISICAL_SECRET=${var.infisical_client_secret} INFISICAL_PROJECT=${var.infisical_project_slug} CLUSTER_DOMAIN=${var.cluster_domain} ~/aurora_init.sh",
             "rm ~/aurora_init.sh"
         ]
     }

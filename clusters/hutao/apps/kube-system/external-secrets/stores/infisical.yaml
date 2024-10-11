@@ -1,0 +1,21 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: infisical
+spec:
+  provider:
+    infisical:
+      auth:
+        universalAuthCredentials:
+          clientId:
+            key: clientId
+            name: cluster-secrets
+            namespace: flux-system
+          clientSecret:
+            key: clientSecret
+            name: cluster-secrets
+            namespace: flux-system
+      secretsScope:
+        projectSlug: ${projectSlug}
+        environmentSlug: ${environment}
