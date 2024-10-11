@@ -76,7 +76,7 @@ stages:
             {{- end }}
             {{- if $first }}
             stages:
-              "provider-kairos.bootstrap.after.k3s-server-ready":
+              "provider-kairos.bootstrap.after.k3s-ready":
                 - name: "Drop external secret"
                   if: "[ ! -e /var/lib/rancher/k3s/server/manifests/cluster-secrets.yaml ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
                   files:
@@ -133,3 +133,8 @@ stages:
         KUBECONFIG: /etc/rancher/k3s/k3s.yaml
         CONTAINERD_ADDRESS: /run/k3s/containerd/containerd.sock
         CONTAINERD_NAMESPACE: k8s.io
+  "kairos-install.after":
+    - name: "Enable k3s ready units"
+      commands:
+        - systemctl enable k3s-agent-ready.service
+        - systemctl enable k3s-ready.service
