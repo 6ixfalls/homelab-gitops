@@ -110,10 +110,10 @@ stages:
                         # Flux
                         kubectl apply --server-side --kustomize github.com/6ixfalls/homelab-gitops.git//bootstrap
                         kubectl apply --server-side --kustomize github.com/6ixfalls/homelab-gitops.git//clusters/hutao/flux/config
-                        touch /var/lib/rancher/k3s/server/manifests/flux.applied
+                        touch /var/lib/rancher/k3s/server/manifests/bootstrap.applied
                       permissions: 0777
                   commands:
-                    - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/flux-manifest.sh > /tmp/flux-apply.out 2>&1 &"
+                    - "KUBECONFIG=/etc/rancher/k3s/k3s.yaml nohup /bin/bash /tmp/bootstrap-manifest.sh > /tmp/bootstrap-apply.out 2>&1 &"
             {{- end }}
   # -- https://github.com/derailed/k9s/issues/1399
   initramfs:
