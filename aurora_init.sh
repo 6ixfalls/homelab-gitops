@@ -26,6 +26,7 @@ declare -A variables=(
     [infisical_id]=$INFISICAL_ID
     [infisical_secret]=$INFISICAL_SECRET
     [infisical_project]=$INFISICAL_PROJECT
+    [infisical_token]=$INFISICAL_TOKEN
     [cluster_domain]=$CLUSTER_DOMAIN
 )
 
@@ -34,6 +35,7 @@ variables[infisical_environment]=\$(echo -n \${variables[infisical_environment]}
 variables[infisical_id]=\$(echo -n \${variables[infisical_id]} | base64 -w0)
 variables[infisical_secret]=\$(echo -n \${variables[infisical_secret]} | base64 -w0)
 variables[infisical_project]=\$(echo -n \${variables[infisical_project]} | base64 -w0)
+variables[infisical_token]=\$(echo -n \${variables[infisical_token]} | base64 -w0)
 variables[cluster_domain]=\$(echo -n \${variables[cluster_domain]} | base64 -w0)
 
 curl -o /tmp/pulled-cloud-config.yaml https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cloud-config.yaml

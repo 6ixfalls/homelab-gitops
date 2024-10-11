@@ -2,7 +2,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ClusterSecretStore
 metadata:
-  name: infisical
+  name: infisical-native
 spec:
   provider:
     infisical:
@@ -19,3 +19,42 @@ spec:
       secretsScope:
         projectSlug: ${projectSlug}
         environmentSlug: ${environment}
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: infisical
+spec:
+  provider:
+    webhook:
+      url: "https://app.infisical.com/api/v3/secrets/raw/{{ .remoteRef.property }}?environment={{ .conf.environment }}&workspaceSlug={{ .conf.projectSlug }}&secretPath=/{{ .remoteRef.key }}"
+      method: GET
+      timeout: 5s
+      result:
+        jsonPath: "$.secret.secretValue"
+      headers:
+        Authorization: "Bearer {{ .conf.infisicalToken }}"
+      secrets:
+        - name: conf
+          secretRef:
+            name: cluster-secrets
+            namespace: flux-system
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: infisical-full
+spec:
+  provider:
+    webhook:
+      url: "https://app.infisical.com/api/v3/secrets/raw/{{ .remoteRef.property }}?environment={{ .conf.environment }}&workspaceSlug={{ .conf.projectSlug }}&secretPath=/{{ .remoteRef.key }}"
+      method: GET
+      timeout: 5s
+      result: {}
+      headers:
+        Authorization: "Bearer {{ .conf.infisicalToken }}"
+      secrets:
+        - name: conf
+          secretRef:
+            name: cluster-secrets
+            namespace: flux-system
