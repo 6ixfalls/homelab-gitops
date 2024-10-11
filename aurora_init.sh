@@ -22,14 +22,18 @@ cat << EOF > /root/aurora-entrypoint.sh
 
 declare -A variables=(
     [p2p_network_token]=$(docker run -ti --rm quay.io/mudler/edgevpn -b -g)
-    [doppler_token]=$DOPPLER_TOKEN
-    [doppler_project]=$DOPPLER_PROJECT
+    [infisical_environment]=$INFISICAL_ENVIRONMENT
+    [infisical_id]=$INFISICAL_ID
+    [infisical_secret]=$INFISICAL_SECRET
+    [infisical_project]=$INFISICAL_PROJECT
     [cluster_domain]=$CLUSTER_DOMAIN
 )
 
 #base64 encode needed
-variables[doppler_token]=\$(echo -n \${variables[doppler_token]} | base64 -w0)
-variables[doppler_project]=\$(echo -n \${variables[doppler_project]} | base64 -w0)
+variables[infisical_environment]=\$(echo -n \${variables[infisical_environment]} | base64 -w0)
+variables[infisical_id]=\$(echo -n \${variables[infisical_id]} | base64 -w0)
+variables[infisical_secret]=\$(echo -n \${variables[infisical_secret]} | base64 -w0)
+variables[infisical_project]=\$(echo -n \${variables[infisical_project]} | base64 -w0)
 variables[cluster_domain]=\$(echo -n \${variables[cluster_domain]} | base64 -w0)
 
 curl -o /tmp/pulled-cloud-config.yaml https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cloud-config.yaml
