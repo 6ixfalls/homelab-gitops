@@ -4,10 +4,10 @@
 users:
   - name: six
     shell: /bin/bash
-    groups: [admin, sudo]
+    groups: [admin]
     ssh_authorized_keys: [github:6ixfalls]
 
-ssh_pwauth: false
+strict: true
 
 install:
   device: /dev/sda
