@@ -1,0 +1,12 @@
+[Unit]
+Description=Kairos k3s booted stage runner (k3s)
+Wants=k3s.service
+After=k3s.service
+
+[Service]
+Type=oneshot
+ExecStart=kairos-agent run-stage provider-kairos.bootstrap.after.k3s-ready
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target

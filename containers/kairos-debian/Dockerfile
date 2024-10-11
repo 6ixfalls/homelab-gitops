@@ -14,6 +14,8 @@ RUN apt-get update && \
     && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ADD ./units /etc/systemd/system/
+
 RUN kernel=$(ls /lib/modules | head -n1) && \
     dracut -v -f "/boot/initrd-${kernel}" "${kernel}" && \
     ln -sf "initrd-${kernel}" /boot/initrd && \

@@ -76,7 +76,7 @@ stages:
             {{- end }}
             {{- if $first }}
             stages:
-              reconcile:
+              "provider-kairos.bootstrap.after.k3s-server-ready":
                 - name: "Drop external secret"
                   if: "[ ! -e /var/lib/rancher/k3s/server/manifests/cluster-secrets.yaml ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
                   files:
