@@ -8,7 +8,7 @@ spec:
   rules:
     - name: osrelease.kairos
       labelsTemplate: |
-        {{ range .system.osrelease }}system-{{ .Name }}={{ .Value }}
+        {{ range .system.osRelease }}system-{{ .Name }}={{ .Value }}
         {{ end }}
       matchFeatures:
         - feature: system.osRelease
