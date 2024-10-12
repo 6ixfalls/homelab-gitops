@@ -122,24 +122,30 @@ stages:
   boot:
     - name: "Format longhorn filesystem if unformatted"
       if: >-
+        bash -c '
         [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && 
         [ ! -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] && 
         [[ ! $(fdisk -lo type /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn | tail -n 1) =~ "Linux" ]]
+        '
       commands:
         - parted /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn --script -a optimal -- mklabel gpt mkpart longhorn ext4 0% 100%
         - &partition mkfs.ext4 -F /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1
     - name: "Partition longhorn filesystem if unpartitioned"
       if: >-
+        bash -c '
         [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && 
         [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] &&
         [[ $(lsblk -no FSTYPE /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1) != "ext4" ]]
+        '
       commands:
         - *partition
     - name: "Mount longhorn filesystem"
       if: >-
+        bash -c '
         [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn ] && 
         [ -e /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1 ] &&
         [[ $(lsblk -no FSTYPE /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_longhorn-part1) == "ext4" ]]
+        '
       commands:
         # -- https://github.com/kairos-io/packages/blob/3482fed51f21a2155b60a0aa9ac91b1d839d1029/packages/static/kairos-overlay-files/files/system/oem/00_rootfs_uki.yaml#L43
         - umount /var/lib/longhorn
