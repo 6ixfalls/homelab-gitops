@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/nfd.k8s-sigs.io/nodefeaturerule_v1alpha1.json
+apiVersion: nfd.k8s-sigs.io/v1alpha1
+kind: NodeFeatureRule
+metadata:
+  name: kairos-version
+spec:
+  rules:
+    - name: osrelease.kairos
+      labelsTemplate: |
+        {{ range .system.osrelease }}system-{{ .Name }}={{ .Value }}
+        {{ end }}
+      matchFeatures:
+        - feature: system.osRelease
+          matchExpressions:
+            KAIROS_VERSION: { op: Exists }
+            KAIROS_IMAGE_LABEL: { op: Exists }
