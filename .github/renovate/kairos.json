@@ -9,11 +9,16 @@
     "customManagers": [
         {
             "customType": "regex",
-            "fileMatch": ["(^|/)bootstrap/.+\\.sh$"],
-            "matchStrings": [
-                "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sIMAGE=(.*?):(?<currentValue>.*)"
+            "fileMatch": [
+                "(^|/)bootstrap/.+\\.sh$",
+                "(^|/)clusters/.+\\.ya?ml$"
             ],
-            "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+            "matchStrings": [
+                "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)",
+                "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)"
+            ],
+            "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+            "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
         }
     ]
 }
