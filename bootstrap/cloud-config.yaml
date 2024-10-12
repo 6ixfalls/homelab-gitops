@@ -94,6 +94,8 @@ stages:
                         metadata:
                           name: cluster-secrets
                           namespace: flux-system
+                          labels:
+                            external-secrets.io/type: webhook
                 - name: "Add cluster-specific manifests"
                   if: "[ ! -e /var/lib/rancher/k3s/server/manifests/bootstrap.applied ] && [ -e /etc/rancher/k3s/k3s.yaml ]"
                   files:
