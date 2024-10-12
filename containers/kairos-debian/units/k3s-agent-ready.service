@@ -1,6 +1,5 @@
 [Unit]
 Description=Kairos k3s booted stage runner (k3s-agent)
-Wants=k3s-agent.service
 After=k3s-agent.service
 
 [Service]
@@ -9,4 +8,4 @@ ExecStart=kairos-agent run-stage provider-kairos.bootstrap.after.k3s-agent-ready
 TimeoutSec=30
 
 [Install]
-RequiredBy=k3s-agent.service
+WantedBy=k3s-agent.service
