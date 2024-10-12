@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app system-upgrade-controller
+  namespace: flux-system
+spec:
+  targetNamespace: system-upgrade
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: node-feature-discovery-rules
+  path: ./clusters/hutao/apps/system-upgrade/system-upgrade-controller/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: homelab-gitops
+  wait: true
+  interval: 30m
+  timeout: 5m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app system-upgrade-controller-plans
+  namespace: flux-system
+spec:
+  targetNamespace: system-upgrade
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: system-upgrade-controller
+  path: ./clusters/hutao/apps/system-upgrade/system-upgrade-controller/plans
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: homelab-gitops
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      # renovate: datasource=docker depName=quay.io/kairos/debian
+      KAIROS_VERSION: bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s1

@@ -15,3 +15,4 @@ spec:
           matchExpressions:
             KAIROS_VERSION: { op: Exists }
             KAIROS_IMAGE_LABEL: { op: Exists }
+            KAIROS_ID: { op: Exists }
