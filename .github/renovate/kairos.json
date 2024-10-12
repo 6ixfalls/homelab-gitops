@@ -10,14 +10,13 @@
         {
             "customType": "regex",
             "fileMatch": [
-                "(^|/)bootstrap/.+\\.sh$",
-                "(^|/)clusters/.+\\.ya?ml$"
+                "(^|/)clusters/.+\\.ya?ml$",
+                "(^|/)containers/.+\\.Dockerfile$"
             ],
             "matchStrings": [
                 "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)",
                 "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)"
             ],
-            "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
             "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
         }
     ]
