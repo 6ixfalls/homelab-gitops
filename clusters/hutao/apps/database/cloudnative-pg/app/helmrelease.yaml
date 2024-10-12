@@ -17,6 +17,8 @@ spec:
   dependsOn:
     - name: longhorn
       namespace: longhorn-system
+    - name: minio
+      namespace: default
   values:
     crds:
       create: true
