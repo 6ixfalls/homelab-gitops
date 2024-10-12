@@ -15,10 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image:
-          [
-            "ghcr.io/6ixfalls/kairos-debian",
-          ]
+        image: ["ghcr.io/6ixfalls/kairos-debian"]
         include:
           - image: "ghcr.io/6ixfalls/kairos-debian"
             context: "{{defaultContext}}:containers/kairos-debian"
@@ -45,7 +42,7 @@ jobs:
       - name: Get image tag from Dockerfile
         if: matrix.tagFrom != null
         id: get-tag
-        run: echo "IMAGE_TAG=$(grep -oE 'FROM[[:space:]]+[^[:space:]]+:[^[:space:]]+' ${{ matrix.tagFrom }} | cut -d ":" -f 2)" >> "$GITHUB_OUTPUT"
+        run: echo "IMAGE_TAG=$(grep -oE 'FROM[[:space:]]+[^[:space:]]+:[^[:space:]]+' ${{ matrix.tagFrom }} | cut -d ":" -f 2)-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v5
