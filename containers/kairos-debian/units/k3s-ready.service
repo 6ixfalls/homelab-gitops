@@ -7,3 +7,6 @@ After=k3s.service
 Type=oneshot
 ExecStart=kairos-agent run-stage provider-kairos.bootstrap.after.k3s-ready
 TimeoutSec=30
+
+[Install]
+RequiredBy=k3s.service
