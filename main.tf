@@ -139,6 +139,7 @@ resource "proxmox_virtual_environment_vm" "cluster_node" {
         interface = "scsi0"
         size = 16
         iothread = true
+        backup = false
     }
 
     network_device {
@@ -207,6 +208,10 @@ resource "proxmox_virtual_environment_vm" "agent" {
     iothread = true
     backup = false
     serial = "longhorn"
+  }
+
+  memory {
+    dedicated = 8192
   }
   
   network_device {
