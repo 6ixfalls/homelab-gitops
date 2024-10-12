@@ -12,3 +12,4 @@ resources:
   - ./cloudnative-pg.yaml
   - ./longhorn.yaml
   - ./tyzbit.yaml
+  - ./node-feature-discovery.yaml

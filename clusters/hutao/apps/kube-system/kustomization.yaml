@@ -7,3 +7,4 @@ resources:
   # Flux-Kustomizations
   - ./cilium/ks.yaml
   - ./external-secrets/ks.yaml
+  - ./node-feature-discovery/ks.yaml
