@@ -13,3 +13,5 @@ resources:
   - ./longhorn.yaml
   - ./tyzbit.yaml
   - ./node-feature-discovery.yaml
+  - ./backube.yaml
+  - ./piraeus.yaml
