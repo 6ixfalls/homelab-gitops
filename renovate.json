@@ -1,14 +1,13 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
-        "config:base",
+        "config:recommended",
         ":dependencyDashboard",
         ":semanticCommits",
         "github>6ixfalls/homelab-gitops//.github/renovate/commitMessage.json",
         "github>6ixfalls/homelab-gitops//.github/renovate/autoMerge.json",
         "github>6ixfalls/homelab-gitops//.github/renovate/kairos.json"
     ],
-    "platform": "github",
     "dependencyDashboardTitle": "Renovate Dashboard 🤖",
     "prHourlyLimit": 5,
     "flux": {
