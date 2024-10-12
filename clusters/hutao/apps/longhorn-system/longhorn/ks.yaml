@@ -11,8 +11,6 @@ spec:
       app.kubernetes.io/name: *app
   path: ./clusters/hutao/apps/longhorn-system/longhorn/app
   prune: false # never should be deleted
-  dependsOn:
-    - name: longhorn-substitution
   sourceRef:
     kind: GitRepository
     name: homelab-gitops
