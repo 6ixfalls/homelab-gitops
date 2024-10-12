@@ -194,8 +194,3 @@ stages:
             # Failed all attempts
             exit 2
           permissions: 0777
-  "kairos-install.after":
-    - name: "Enable k3s ready units"
-      commands:
-        - systemctl enable k3s-agent-ready.service
-        - systemctl enable k3s-ready.service
