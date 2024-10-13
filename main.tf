@@ -317,7 +317,7 @@ resource "proxmox_virtual_environment_container" "auroraboot" {
     provisioner "remote-exec" {
         inline = [
             "chmod +x ~/aurora_init.sh",
-            "~/aurora_init.sh INFISICAL_ENVIRONMENT=${base64encode(var.infisical_environment)} INFISICAL_ID=${base64encode(var.infisical_client_id)} INFISICAL_SECRET=${base64encode(var.infisical_client_secret)} INFISICAL_PROJECT=${base64encode(var.infisical_project_slug)} INFISICAL_TOKEN=${base64encode(var.infisical_token)} CLUSTER_DOMAIN=${base64encode(var.cluster_domain)}",
+            "INFISICAL_ENVIRONMENT=${var.infisical_environment} INFISICAL_ID=${var.infisical_client_id} INFISICAL_SECRET=${var.infisical_client_secret} INFISICAL_PROJECT=${var.infisical_project_slug} INFISICAL_TOKEN=${var.infisical_token} CLUSTER_DOMAIN=${var.cluster_domain} ~/aurora_init.sh",
             "rm ~/aurora_init.sh"
         ]
     }

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-### Install Docker
 apt-get update -y
 apt-get install -y curl ca-certificates curl gnupg
 install -m 0755 -d /etc/apt/keyrings
@@ -18,11 +17,45 @@ apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docke
 
 echo -e '{\n  "storage-driver": "overlay2"\n  "bridge": "none"\n}' >> /etc/docker/daemon.json
 
-### Populate arguments
-secrets_list=()
-for arg in "$@"; do
-    secrets_list+=$'      - "--set"\n      - "secrets.'"$arg"$'"\n'
+cat << EOF > /root/aurora-entrypoint.sh
+#!/bin/bash
+
+declare -A variables=(
+    [p2p_network_token]=$(docker run -ti --rm quay.io/mudler/edgevpn -b -g)
+    [infisical_environment]=$INFISICAL_ENVIRONMENT
+    [infisical_id]=$INFISICAL_ID
+    [infisical_secret]=$INFISICAL_SECRET
+    [infisical_project]=$INFISICAL_PROJECT
+    [infisical_token]=$INFISICAL_TOKEN
+    [cluster_domain]=$CLUSTER_DOMAIN
+)
+
+#base64 encode needed
+variables[infisical_environment]=\$(echo -n \${variables[infisical_environment]} | base64 -w0)
+variables[infisical_id]=\$(echo -n \${variables[infisical_id]} | base64 -w0)
+variables[infisical_secret]=\$(echo -n \${variables[infisical_secret]} | base64 -w0)
+variables[infisical_project]=\$(echo -n \${variables[infisical_project]} | base64 -w0)
+variables[infisical_token]=\$(echo -n \${variables[infisical_token]} | base64 -w0)
+variables[cluster_domain]=\$(echo -n \${variables[cluster_domain]} | base64 -w0)
+
+curl -o /tmp/pulled-cloud-config.yaml https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cloud-config.yaml
+sed_command="sed"
+
+# Dynamically build the sed command based on the variables
+for key in "\${!variables[@]}"; do
+    value=\${variables[\$key]}
+    # Escape slashes in the value
+    escaped_value=$(echo \$value | sed 's/\//\\\//g')
+    sed_command+=" -e 's/{{ \${key^^} }}/\${escaped_value}/g'"
 done
+
+# Apply the transformations
+sed_command+=" /tmp/pulled-cloud-config.yaml > /tmp/cloud-config.yaml"
+eval \$sed_command
+
+/usr/bin/auroraboot --cloud-config /tmp/cloud-config.yaml https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/auroraboot-config.yaml
+EOF
+chmod +x /root/aurora-entrypoint.sh
 
 # Create compose file for auroraboot
 cat << EOF > /root/docker-compose.yml
@@ -33,14 +66,10 @@ services:
     container_name: auroraboot
     restart: unless-stopped
     network_mode: host
-    command:
-      - "https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/auroraboot-config.yaml"
-      - "--cloud-config"
-      - "https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cloud-config.yaml"
-      - "--set"
-      - "secrets.P2P_NETWORK_TOKEN=$(docker run -ti --rm quay.io/mudler/edgevpn -b -g)"
-${secrets_list[@]}
+    entrypoint: bash
+    command: -c "/usr/bin/aurora-entrypoint.sh"
     volumes:
+      - /root/aurora-entrypoint.sh:/usr/bin/aurora-entrypoint.sh
       - ./auroraboot:/storage
 EOF
 
