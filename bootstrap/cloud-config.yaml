@@ -13,12 +13,14 @@ install:
   device: /dev/sda
   auto: true
   reboot: true
-  extra-dirs-rootfs: &longhorn [/var/lib/longhorn]
+  extra-dirs-rootfs: &extra-dirs [/var/lib/longhorn, /var/openebs/local]
+  bind_mounts:
+    - /var/openebs/local
 
 upgrade:
-  extra-dirs-rootfs: *longhorn
+  extra-dirs-rootfs: *extra-dirs
 reset:
-  extra-dirs-rootfs: *longhorn
+  extra-dirs-rootfs: *extra-dirs
 
 growpart:
   devices: ["/"]
