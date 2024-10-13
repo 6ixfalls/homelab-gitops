@@ -49,7 +49,7 @@ stages:
             k3s:
               enabled: true
               env:
-                K3S_TOKEN: "{{ P2P_NETWORK_TOKEN }}"
+                K3S_TOKEN: "[[.secrets.P2P_NETWORK_TOKEN]]"
               args:
             {{- if $first }}
                 - --cluster-init
@@ -67,7 +67,7 @@ stages:
             k3s-agent:
               enabled: true
               env:
-                K3S_TOKEN: "{{ P2P_NETWORK_TOKEN }}"
+                K3S_TOKEN: "[[.secrets.P2P_NETWORK_TOKEN]]"
               args:
                 - --server https://10.17.4.111:6443
                 - --node-label "node.longhorn.io/create-default-disk=true"
@@ -82,12 +82,12 @@ stages:
                       content: |
                         apiVersion: v1
                         data:
-                          environment: {{ INFISICAL_ENVIRONMENT }}
-                          clientId: {{ INFISICAL_ID }}
-                          clientSecret: {{ INFISICAL_SECRET }}
-                          projectSlug: {{ INFISICAL_PROJECT }}
-                          infisicalToken: {{ INFISICAL_TOKEN }}
-                          clusterDomain: {{ CLUSTER_DOMAIN }}
+                          environment: "[[.secrets.INFISICAL_ENVIRONMENT]]"
+                          clientId: "[[.secrets.INFISICAL_ID]]"
+                          clientSecret: "[[.secrets.INFISICAL_SECRET]]"
+                          projectSlug: "[[.secrets.INFISICAL_PROJECT]]"
+                          infisicalToken: "[[.secrets.INFISICAL_TOKEN]]"
+                          clusterDomain: "[[.secrets.CLUSTER_DOMAIN]]"
                         kind: Secret
                         metadata:
                           name: cluster-secrets
