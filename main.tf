@@ -137,7 +137,7 @@ resource "proxmox_virtual_environment_vm" "cluster_node" {
         datastore_id = "local-zfs"
         file_format = "raw"
         interface = "scsi0"
-        size = 16
+        size = 32
         iothread = true
         backup = false
     }
