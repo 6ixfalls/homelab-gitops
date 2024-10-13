@@ -21,7 +21,7 @@ echo -e '{\n  "storage-driver": "overlay2"\n  "bridge": "none"\n}' >> /etc/docke
 ### Populate arguments
 secrets_list=()
 for arg in "$@"; do
-    secrets_list+=$'      - "--set"\n      - "'"$arg"$'"\n'
+    secrets_list+=$'      - "--set"\n      - "secrets.'"$arg"$'"\n'
 done
 
 # Create compose file for auroraboot
@@ -38,7 +38,7 @@ services:
       - "--cloud-config"
       - "https://raw.githubusercontent.com/6ixfalls/homelab-gitops/main/bootstrap/cloud-config.yaml"
       - "--set"
-      - "P2P_NETWORK_TOKEN=$(docker run -ti --rm quay.io/mudler/edgevpn -b -g)"
+      - "secrets.P2P_NETWORK_TOKEN=$(docker run -ti --rm quay.io/mudler/edgevpn -b -g)"
 ${secrets_list[@]}
     volumes:
       - ./auroraboot:/storage
