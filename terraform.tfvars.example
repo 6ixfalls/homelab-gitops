@@ -8,7 +8,7 @@ opnsense_password = ""
 
 infisical_client_id = ""
 infisical_client_secret = ""
-infisical_project_slug = ""
+infisical_project_slug = "" # Use workspaceId/projectId
 infisical_token = ""
 infisical_environment = ""
 cluster_domain = ""
