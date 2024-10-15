@@ -6,7 +6,8 @@
         ":semanticCommits",
         "github>6ixfalls/homelab-gitops//.github/renovate/commitMessage.json",
         "github>6ixfalls/homelab-gitops//.github/renovate/autoMerge.json",
-        "github>6ixfalls/homelab-gitops//.github/renovate/kairos.json"
+        "github>6ixfalls/homelab-gitops//.github/renovate/kairos.json",
+        "github>6ixfalls/homelab-gitops//.github/renovate/customManagers.json5"
     ],
     "dependencyDashboardTitle": "Renovate Dashboard 🤖",
     "prHourlyLimit": 5,
