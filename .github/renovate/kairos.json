@@ -9,6 +9,7 @@
     "customManagers": [
         {
             "customType": "regex",
+            "description": ["Process custom dependencies"],
             "fileMatch": [
                 "(^|/)clusters/.+\\.ya?ml$",
                 "(^|/)containers/.+\\.Dockerfile$"
