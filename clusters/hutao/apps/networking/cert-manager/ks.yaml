@@ -27,8 +27,6 @@ kind: Kustomization
 metadata:
   name: &app cert-manager
   namespace: flux-system
-  labels:
-    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: networking
   commonMetadata:
@@ -44,12 +42,6 @@ spec:
   wait: true
   interval: 30m
   timeout: 5m
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: cert-manager-secret
-      - kind: Secret
-        name: cluster-secrets
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -57,6 +49,8 @@ kind: Kustomization
 metadata:
   name: &app cert-manager-issuers
   namespace: flux-system
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
 spec:
   targetNamespace: networking
   commonMetadata:
@@ -73,3 +67,9 @@ spec:
   wait: true
   interval: 30m
   timeout: 5m
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: cert-manager-secret
+      - kind: Secret
+        name: cluster-secrets
