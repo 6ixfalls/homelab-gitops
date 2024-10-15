@@ -5,20 +5,5 @@
             "matchDatasources": ["docker"],
             "versioning": "regex:^bookworm-standard-amd64-generic-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\-k3sv([^-]+)-k3s(?<build>\\d+)-?(?<revision>\\d+)?$"
         }
-    ],
-    "customManagers": [
-        {
-            "customType": "regex",
-            "description": ["Process custom dependencies"],
-            "fileMatch": [
-                "(^|/)clusters/.+\\.ya?ml$",
-                "(^|/)containers/.+\\.Dockerfile$"
-            ],
-            "matchStrings": [
-                "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)",
-                "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n.+/(?<currentValue>(v|\\d)[^/]+)"
-            ],
-            "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
-        }
     ]
 }
