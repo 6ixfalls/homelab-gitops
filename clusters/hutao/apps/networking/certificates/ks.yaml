@@ -6,7 +6,7 @@ metadata:
   name: &app certificates-import
   namespace: flux-system
 spec:
-  targetNamespace: cert-manager
+  targetNamespace: networking
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -28,7 +28,7 @@ metadata:
   name: &app certificates-export
   namespace: flux-system
 spec:
-  targetNamespace: cert-manager
+  targetNamespace: networking
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -36,7 +36,7 @@ spec:
     - name: certificates-import
     - name: cert-manager-issuers
     - name: external-secrets-stores
-  path: ./clusters/hutao/apps/cert-manager/certificates/export
+  path: ./clusters/hutao/apps/networking/certificates/export
   prune: false
   sourceRef:
     kind: GitRepository
