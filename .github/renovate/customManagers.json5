@@ -4,7 +4,7 @@
     {
       customType: "regex",
       description: "Process various dependencies in YAML files",
-      fileMatch: ["\\.ya?ml(\\.j2)?$"],
+      fileMatch: ["\\.ya?ml$"],
       matchStrings: [
         // Inline
         '\\S+: "?(?<currentValue>[^"\\s]+)"? # ?renovate: depName=(?<depName>\\S+)( datasource=(?<datasource>\\S+))?( versioning=(?<versioning>\\S+))?( extractVersion=(?<extractVersion>\\S+))?',
@@ -18,7 +18,7 @@
     {
       customType: "regex",
       description: "Process GitHub download dependencies in YAML files",
-      fileMatch: ["\\.ya?ml(\\.j2)?$"],
+      fileMatch: ["\\.ya?ml$"],
       matchStrings: [
         // https://github.com/rancher/system-upgrade-controller/releases/download/v0.13.2/crd.yaml
         "https:\\/\\/github.com\\/(?<depName>\\S+?\\/\\S+?)\\/releases\\/download\\/(?<currentValue>(v|\\d)\\S+?)\\/\\S+",
@@ -29,5 +29,13 @@
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
       extractVersionTemplate: "{{#if extractVersion}}{{{extractVersion}}}{{else}}^(?<version>.*)${{/if}}",
     },
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.ya?ml$"],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\scontainer_image: (.*?):(?<currentValue>.*)"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
   ],
 }
