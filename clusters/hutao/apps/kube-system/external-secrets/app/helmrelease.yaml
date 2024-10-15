@@ -17,6 +17,6 @@ spec:
     installCRDs: true
     image:
       repository: ghcr.io/6ixfalls/external-secrets
-      tag: v0.10.4-1
+      tag: v0.10.4-2
     log:
       level: debug
