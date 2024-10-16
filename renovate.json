@@ -19,7 +19,7 @@
     },
     "kubernetes": {
         "fileMatch": [
-            "(^|/)\\bootstrap/.+\\.ya?ml(?:\\.j2)?$",
+            "(^|/)bootstrap/.+\\.ya?ml(?:\\.j2)?$",
             "(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$"
         ]
     }

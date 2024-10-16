@@ -2,7 +2,7 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "packageRules": [
         {
-            "matchDatasources": ["docker"],
+            "matchDatasources": ["docker", "regex"],
             "versioning": "regex:^bookworm-standard-amd64-generic-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\-k3sv([^-]+)-k3s(?<build>\\d+)-?(?<revision>\\d+)?$"
         }
     ]
