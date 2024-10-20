@@ -11,7 +11,7 @@ spec:
   bootstrap: true
   valuesContent: |-
     config:
-      address: "10.17.4.111"
+      address: "10.17.4.1"
     env:
       vip_interface: "ens18"
       cp_enable: "true"

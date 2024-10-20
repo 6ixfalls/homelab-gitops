@@ -8,5 +8,5 @@ resources:
   # Flux-Kustomizations
   - ./cert-manager/ks.yaml
   - ./certificates/ks.yaml
-#  - ./external-dns/ks.yaml
-#  - ./traefik/ks.yaml
+  #  - ./external-dns/ks.yaml
+  - ./traefik/ks.yaml

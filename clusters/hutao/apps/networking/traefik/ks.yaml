@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app traefik-external
+  namespace: flux-system
+spec:
+  targetNamespace: networking
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: certificates-import
+    - name: external-secrets-stores
+  path: ./clusters/hutao/apps/networking/traefik/external
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: homelab-gitops
+  wait: true
+  interval: 30m
+  timeout: 5m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app traefik-internal
+  namespace: flux-system
+spec:
+  targetNamespace: networking
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: certificates-import
+    - name: external-secrets-stores
+  path: ./clusters/hutao/apps/networking/traefik/internal
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: homelab-gitops
+  wait: false
+  interval: 30m
+  timeout: 5m
