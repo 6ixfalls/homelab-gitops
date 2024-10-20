@@ -1,5 +1,7 @@
 FROM quay.io/kairos/debian:bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s1
 
+ARG IMAGE_TAG
+
 # renovate: depName=fluxcd/flux2 datasource=github-releases extractVersion=^ENV\sFLUX_VERSION=(?<version>.+)$
 ENV FLUX_VERSION=2.2.3
 
