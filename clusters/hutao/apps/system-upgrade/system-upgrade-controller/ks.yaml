@@ -45,4 +45,4 @@ spec:
   postBuild:
     substitute:
       # renovate: depName=ghcr.io/6ixfalls/kairos-debian datasource=docker
-      KAIROS_VERSION: "bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s1-16"
+      KAIROS_VERSION: "bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s1-17"
