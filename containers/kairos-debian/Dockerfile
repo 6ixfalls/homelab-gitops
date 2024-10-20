@@ -19,3 +19,5 @@ ADD ./units /etc/systemd/system/
 RUN systemctl enable \
     k3s-agent-ready.service \
     k3s-ready.service
+
+RUN echo "KAIROS_CUSTOM_BUILD_TAG=$IMAGE_TAG" >> /etc/os-release

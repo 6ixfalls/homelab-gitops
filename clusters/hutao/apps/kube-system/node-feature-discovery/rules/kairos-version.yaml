@@ -16,3 +16,4 @@ spec:
             KAIROS_VERSION: { op: Exists }
             KAIROS_IMAGE_LABEL: { op: Exists }
             KAIROS_ID: { op: Exists }
+            KAIROS_CUSTOM_BUILD_TAG: { op: Exists }

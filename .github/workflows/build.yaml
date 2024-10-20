@@ -49,7 +49,9 @@ jobs:
         with:
           context: ${{ matrix.context || '.' }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ matrix.image }}:${{ steps.get-tag.outputs.IMAGE_TAG || 'latest' }}
+          tags: ${{ matrix.image }}:${{ steps.get-tag.outputs.IMAGE_TAG }}
+          build-args: |
+            IMAGE_TAG=${{ steps.get-tag.outputs.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64

@@ -18,7 +18,7 @@ spec:
       - key: feature.node.kubernetes.io/system-os_release.KAIROS_ID
         operator: In
         values: ["kairos"]
-      - key: feature.node.kubernetes.io/system-os_release.KAIROS_IMAGE_LABEL
+      - key: feature.node.kubernetes.io/system-os_release.KAIROS_CUSTOM_BUILD_TAG
         operator: NotIn
         values: ["${KAIROS_VERSION}"]
   tolerations:
