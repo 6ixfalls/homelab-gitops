@@ -32,8 +32,6 @@ spec:
       name: traefik-internal
     ingressRoute:
       dashboard:
-        annotations:
-          kubernetes.io/ingress.class: traefik-internal
         enabled: true
         entryPoints:
           - websecure

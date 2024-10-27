@@ -32,8 +32,6 @@ spec:
       name: traefik-external
     ingressRoute:
       dashboard:
-        annotations:
-          kubernetes.io/ingress.class: traefik-external
         enabled: true
         entryPoints:
           - websecure
