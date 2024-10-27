@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: 28.2.0
+      version: 32.1.1
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -23,9 +23,13 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    deployment:
+      kind: Deployment
+      replicas: 2
     ingressClass:
       enabled: true
       isDefaultClass: false
+      name: traefik-external
     ingressRoute:
       dashboard:
         annotations:
@@ -68,14 +72,14 @@ spec:
           enabled: true
     providers:
       kubernetesCRD:
-        allowCrossNamespace: false
-        allowEmptyServices: false
+        allowCrossNamespace: true
+        allowEmptyServices: true
         allowExternalNameServices: true
         enabled: true
         ingressClass: traefik-external
       kubernetesIngress:
-        allowEmptyServices: false
-        allowExternalNameServices: false
+        allowEmptyServices: true
+        allowExternalNameServices: true
         enabled: true
         ingressClass: traefik-external
         publishedService:
@@ -87,5 +91,5 @@ spec:
       enabled: true
       single: true
       spec:
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
       type: LoadBalancer
