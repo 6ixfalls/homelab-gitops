@@ -4,7 +4,7 @@
         {
             "customType": "regex",
             "description": ["Process custom dependencies"],
-            "fileMatch": ["(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$"],
+            "fileMatch": ["(^|/).+\\.ya?ml$", "(^|/).+Dockerfile$"],
             "matchStrings": [
                 "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n.+: (&\\S+\\s)?(?<currentValue>\\S+)"
             ],
