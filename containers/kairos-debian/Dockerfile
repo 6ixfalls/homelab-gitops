@@ -3,7 +3,7 @@ FROM quay.io/kairos/debian:bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s
 ARG IMAGE_TAG
 
 # renovate: datasource=github-tags depName=fluxcd/flux2
-ENV FLUX_VERSION="v2.2.3"
+ENV FLUX_VERSION="v2.4.0"
 
 ADD https://github.com/fluxcd/flux2/releases/download/${FLUX_VERSION}/flux_${FLUX_VERSION}_linux_amd64.tar.gz /tmp
 RUN DOWNLOAD_FILE="/tmp/flux_${FLUX_VERSION}_linux_amd64.tar.gz" && \
