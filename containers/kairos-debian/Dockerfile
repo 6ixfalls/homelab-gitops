@@ -1,4 +1,4 @@
-FROM quay.io/kairos/debian:bookworm-standard-amd64-generic-v3.2.1-k3sv1.29.9-k3s1
+FROM quay.io/kairos/debian:bookworm-standard-amd64-generic-v3.2.3-k3sv1.31.2-k3s1
 
 ARG IMAGE_TAG
 
